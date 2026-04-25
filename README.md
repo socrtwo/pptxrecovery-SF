@@ -1,6 +1,11 @@
 <!--MODERNIZED:v1-->
 # Pptxrecovery
 
+<!--PAGES_LINK_BANNER-->
+> 🌐 **Live page:** [https://socrtwo.github.io/pptxrecovery-SF/](https://socrtwo.github.io/pptxrecovery-SF/)  
+> 📦 **Releases:** [github.com/socrtwo/pptxrecovery-SF/releases](https://github.com/socrtwo/pptxrecovery-SF/releases)
+<!--/PAGES_LINK_BANNER-->
+
 > Migrated from SourceForge via SF2GH Migrator
 
 [![Live page](https://img.shields.io/badge/live-page-ff2e93?style=for-the-badge)](https://socrtwo.github.io/pptxrecovery-SF/)
