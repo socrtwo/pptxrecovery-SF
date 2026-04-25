@@ -1,5 +1,10 @@
 # PPTX Recovery
 
+<!--PAGES_LINK_BANNER-->
+> 🌐 **Live page:** [https://socrtwo.github.io/pptxrecovery-SF/](https://socrtwo.github.io/pptxrecovery-SF/)  
+> 📦 **Releases:** [github.com/socrtwo/pptxrecovery-SF/releases](https://github.com/socrtwo/pptxrecovery-SF/releases)
+<!--/PAGES_LINK_BANNER-->
+
 Recovers content from corrupt PowerPoint PPTX files using multiple repair strategies including zip repair, XML validation, and text extraction.
 
 ## Screenshots
