@@ -1,0 +1,82 @@
+name: Build & publish multi-platform releases
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v1.0.0)'
+        required: true
+        default: 'v0.0.0-dev'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python (for icon generation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build platform bundles
+        run: bash scripts/build-releases.sh "${{ steps.ver.outputs.version }}"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pptxrecovery-${{ steps.ver.outputs.version }}
+          path: dist/
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: PPTX Recovery ${{ steps.ver.outputs.version }}
+          body: |
+            **PPTX Recovery ${{ steps.ver.outputs.version }}** — modernized cross-platform release.
+
+            All bundles ship the same in-browser app; the only difference is the launcher.
+            Your `.pptx` file never leaves your device — recovery happens entirely client-side.
+
+            | Platform   | Download                                                                |
+            | ---------- | ----------------------------------------------------------------------- |
+            | Windows    | `pptxrecovery-${{ steps.ver.outputs.version }}-windows.zip`             |
+            | macOS      | `pptxrecovery-${{ steps.ver.outputs.version }}-macos.zip`               |
+            | Linux      | `pptxrecovery-${{ steps.ver.outputs.version }}-linux.tar.gz`            |
+            | ChromeOS   | `pptxrecovery-${{ steps.ver.outputs.version }}-chromeos.zip`            |
+            | Android    | `pptxrecovery-${{ steps.ver.outputs.version }}-android.zip`             |
+            | iOS        | `pptxrecovery-${{ steps.ver.outputs.version }}-ios.zip`                 |
+            | Web        | `pptxrecovery-${{ steps.ver.outputs.version }}-web.zip`                 |
+
+            Or just use the live PWA — it works on every supported platform:
+            **https://socrtwo.github.io/pptxrecovery-SF/**
+
+            Verify downloads with `SHA256SUMS`.
+          files: |
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-windows.zip
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-macos.zip
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-linux.tar.gz
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-chromeos.zip
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-android.zip
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-ios.zip
+            dist/pptxrecovery-${{ steps.ver.outputs.version }}-web.zip
+            dist/SHA256SUMS
+          fail_on_unmatched_files: true
