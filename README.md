@@ -1,95 +1,146 @@
-<!--MODERNIZED:v1-->
-# Pptxrecovery
+<!--MODERNIZED:v2-->
+# PPTX Recovery
 
-> Migrated from SourceForge via SF2GH Migrator
+> Repair corrupt PowerPoint `.pptx` files — entirely in your browser, on every platform.
 
-[![Live page](https://img.shields.io/badge/live-page-ff2e93?style=for-the-badge)](https://socrtwo.github.io/pptxrecovery-SF/)
+[![Live app](https://img.shields.io/badge/live-app-ff2e93?style=for-the-badge)](https://socrtwo.github.io/pptxrecovery-SF/)
 [![Releases](https://img.shields.io/github/v/release/socrtwo/pptxrecovery-SF?style=for-the-badge&color=7c3aed)](https://github.com/socrtwo/pptxrecovery-SF/releases)
 [![License](https://img.shields.io/github/license/socrtwo/pptxrecovery-SF?style=for-the-badge&color=22d3ee)](https://github.com/socrtwo/pptxrecovery-SF/blob/main/LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/socrtwo/pptxrecovery-SF?style=for-the-badge&color=34d399)](https://github.com/socrtwo/pptxrecovery-SF/commits)
 
-🌐 **Live:** https://socrtwo.github.io/pptxrecovery-SF/  
-📦 **Downloads:** [Releases](https://github.com/socrtwo/pptxrecovery-SF/releases)  
+🌐 **Live app:** https://socrtwo.github.io/pptxrecovery-SF/
+📦 **Downloads:** [Releases](https://github.com/socrtwo/pptxrecovery-SF/releases)
 📂 **Source:** [socrtwo/pptxrecovery-SF](https://github.com/socrtwo/pptxrecovery-SF)
 
 ---
 
-Recovers content from corrupt PowerPoint PPTX files using multiple repair strategies including zip repair, XML validation, and text extraction.
+PPTX Recovery is a small, dependency-free Progressive Web App that salvages
+content from broken `.pptx` files. It opens, scans, and rebuilds the underlying
+ZIP/XML structure right in your browser — your file never leaves the device.
 
-## Screenshots
+## Highlights
 
-Visit the [SourceForge project page](https://sourceforge.net/projects/pptxrecovery/) to view screenshots.
+- 🔒 **100% local.** No upload, no server, no telemetry. The page works offline once loaded.
+- 🩹 **Three-stage repair pipeline:** standard ZIP read → low-level header scan → XML repair & text rescue.
+- ⚡ **No dependencies.** Pure HTML + JavaScript, using the browser's built-in `DecompressionStream` / `CompressionStream`.
+- 📲 **Installs as an app** on Windows, macOS, Linux, ChromeOS, Android, and iOS.
+- 📝 **Two outputs:** a rebuilt `.pptx` plus a plain-text dump of every `<a:t>` slide run.
 
-> **Tip:** If you have screenshots to contribute, open a PR adding them to a `screenshots/` folder!
+## Quick start
 
-**Language:** VB.NET  
-**License:** MIT
+The fastest way is the hosted version:
 
-## Features
+> **https://socrtwo.github.io/pptxrecovery-SF/**
 
-- Multiple recovery strategies for corrupt PPTX files
-- Zip archive structure repair
-- XML validation and truncation
-- Text extraction as a fallback
-- Works with PowerPoint 2007+ format
+Drop a corrupt `.pptx` onto the page, then download the recovered file.
 
-## System Requirements
+## Downloads
 
-- Windows 7 or later
-- Visual Studio 2010+ (Community edition works)
-- .NET Framework 4.0 or later
+Pre-built bundles for every standard platform are attached to each
+[GitHub Release](https://github.com/socrtwo/pptxrecovery-SF/releases). All
+bundles ship the **same in-browser app** — the only difference is how the
+platform launches it.
 
-## Installation & Usage
+| Platform   | File                                       | How to run                                                                  |
+| ---------- | ------------------------------------------ | --------------------------------------------------------------------------- |
+| Windows    | `pptxrecovery-<ver>-windows.zip`           | Unzip → double-click `PptxRecovery.bat`                                     |
+| macOS      | `pptxrecovery-<ver>-macos.zip`             | Unzip → double-click `PptxRecovery.command`                                 |
+| Linux      | `pptxrecovery-<ver>-linux.tar.gz`          | Extract → `./pptxrecovery.sh`                                               |
+| ChromeOS   | `pptxrecovery-<ver>-chromeos.zip`          | Open `web/index.html` in Chrome → install via address-bar icon              |
+| Android    | `pptxrecovery-<ver>-android.zip`           | Visit live URL in Chrome → "Add to Home screen" (or serve `web/` locally)   |
+| iOS        | `pptxrecovery-<ver>-ios.zip`               | Visit live URL in Safari → Share → "Add to Home Screen"                     |
+| Web        | `pptxrecovery-<ver>-web.zip`               | Drop `web/` onto any static host                                            |
 
-### Building from Source
+Each bundle is verified by the `SHA256SUMS` file attached to the same release.
 
-1. Open the `.sln` file in Visual Studio
-2. Restore NuGet packages if prompted
-3. Build the solution (**Build → Build Solution** or `Ctrl+Shift+B`)
-4. Find the compiled `.exe` in `bin/Release/`
+## How it works
 
-### Using a Pre-built Release
+PPTX files are ZIP archives of XML. When a file is corrupt the app tries three
+strategies in order, stopping as soon as it has a usable result:
 
-Download the latest release from the [Releases](../../releases) page and run the `.exe` directly — no install needed.
+1. **Standard ZIP read** — find the End-Of-Central-Directory record, walk every
+   entry, and validate it.
+2. **Low-level scan** — when the central directory is missing or wrong, scan
+   the byte stream for `PK\x03\x04` local-file headers and reconstruct entries
+   one-by-one. Truncated `deflate` streams are retried with shrinking tails so
+   nearly-complete data is recovered when possible.
+3. **XML repair & text rescue** — every `.xml` / `.rels` entry is run through
+   `DOMParser`; broken markup is best-effort patched (control chars stripped,
+   stray tags closed). Slide text is also extracted via a forgiving regex over
+   `<a:t>...</a:t>` runs and offered as a `.txt` fallback.
+
+Recovered entries are repackaged into a fresh, well-formed `.pptx` archive
+written natively with the browser's `CompressionStream`.
+
+## Browser support
+
+Requires `DecompressionStream('deflate-raw')`, available in:
+
+- Chrome / Edge / Opera 95+
+- Safari 16.4+
+- Firefox 113+
+
+If your browser doesn't support it the app surfaces a clear message and stops.
+
+## Building from source
+
+```bash
+git clone https://github.com/socrtwo/pptxrecovery-SF.git
+cd pptxrecovery-SF
+# (optional) regenerate PWA icons
+python3 scripts/gen-icons.py
+# build all platform bundles into dist/
+bash scripts/build-releases.sh v0.0.0-dev
+```
+
+A push of any `v*` tag triggers
+[`.github/workflows/release.yml`](.github/workflows/release.yml), which builds
+the bundles and attaches them to a new GitHub Release.
+
+The hosted PWA is deployed by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to
+`main`.
+
+## Repository layout
+
+```
+.
+├── web/                           # the PWA (this is the whole app)
+│   ├── index.html
+│   ├── recovery.js
+│   ├── manifest.webmanifest
+│   ├── sw.js
+│   └── icon.svg / icon-*.png
+├── scripts/
+│   ├── build-releases.sh          # builds dist/*.zip|.tar.gz
+│   ├── gen-icons.py               # regenerates PNG icons
+│   └── launchers/<platform>/      # per-platform launchers + READMEs
+└── .github/workflows/
+    ├── pages.yml                  # deploy PWA to GitHub Pages
+    └── release.yml                # build & publish multi-platform releases
+```
 
 ## Origin
 
-This project was originally hosted on SourceForge and has been migrated to GitHub for easier access and collaboration.
+This project was originally hosted on **SourceForge** as a Windows-only
+VB.NET application. It has been migrated to GitHub and rebuilt as a
+cross-platform PWA so that everyone — including macOS, Linux, ChromeOS,
+Android and iOS users — can recover broken `.pptx` files without installing
+anything.
 
 - **SourceForge:** [pptxrecovery](https://sourceforge.net/projects/pptxrecovery/)
 - **Migrated with:** [SF2GH Migrator](https://github.com/socrtwo/sf-to-github)
 
 ## Contributing
 
-Contributions are welcome! Feel free to:
-
-1. Fork this repository
-2. Create a feature branch (`git checkout -b my-feature`)
-3. Commit your changes (`git commit -m "Add my feature"`)
-4. Push to the branch (`git push origin my-feature`)
-5. Open a Pull Request
+Issues and pull requests are welcome at
+<https://github.com/socrtwo/pptxrecovery-SF/issues>.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-## 📜 SourceForge heritage
-
-This project originated on **SourceForge** before being migrated to GitHub. The legacy SourceForge entry, if still available, can be searched at:
-
-🔗 https://sourceforge.net/projects/pptxrecovery/
-
-The repository here at `socrtwo/pptxrecovery-SF` is the canonical, actively-maintained home. All future updates, issue tracking, and releases happen on GitHub.
-
-## 🛠️ Contributing
-
-Issues and pull requests are welcome at [https://github.com/socrtwo/pptxrecovery-SF/issues](https://github.com/socrtwo/pptxrecovery-SF/issues).
-
-## 📝 License
-
-See the [LICENSE](https://github.com/socrtwo/pptxrecovery-SF/blob/main/LICENSE) file in this repository. If no license file is present, the project is shared as-is for reference and personal use; please contact the maintainer for other use cases.
+MIT — see [LICENSE](LICENSE) for details. If no `LICENSE` file is present, the
+project is shared as-is for reference and personal use; please contact the
+maintainer for other use cases.
 
 ---
 

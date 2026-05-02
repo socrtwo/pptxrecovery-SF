@@ -1,0 +1,18 @@
+{
+  "name": "PPTX Recovery",
+  "short_name": "PPTX Recovery",
+  "description": "Repair corrupt PowerPoint .pptx files entirely in your browser. No upload required.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f0322",
+  "theme_color": "#0f0322",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "icon-maskable.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}
