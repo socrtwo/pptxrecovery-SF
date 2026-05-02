@@ -93,9 +93,25 @@ python3 scripts/gen-icons.py
 bash scripts/build-releases.sh v0.0.0-dev
 ```
 
-A push of any `v*` tag triggers
-[`.github/workflows/release.yml`](.github/workflows/release.yml), which builds
-the bundles and attaches them to a new GitHub Release.
+### Cutting a release
+
+Two ways, both publish a GitHub Release with all 7 platform bundles attached:
+
+1. **From the GitHub UI:**
+   *Actions* → *Build & publish multi-platform releases* → *Run workflow* →
+   enter a version like `v1.0.0` and click *Run workflow*. The workflow
+   creates the tag on the chosen branch and uploads the artifacts.
+
+2. **From your terminal:**
+
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+   The same workflow ([`.github/workflows/release.yml`](.github/workflows/release.yml))
+   reacts to the tag push, builds the bundles, and attaches them to a new
+   GitHub Release.
 
 The hosted PWA is deployed by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to
