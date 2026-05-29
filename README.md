@@ -22,7 +22,7 @@ ZIP/XML structure right in your browser — your file never leaves the device.
 
 - 🔒 **100% local.** No upload, no server, no telemetry. The page works offline once loaded.
 - 🩹 **Three-stage repair pipeline:** standard ZIP read → low-level header scan → XML repair & text rescue.
-- ⚡ **No dependencies.** Pure HTML + JavaScript, using the browser's built-in `DecompressionStream` / `CompressionStream`.
+- ⚡ **No dependencies.** Pure HTML + JavaScript. Decompression uses the bundled **Immortal Inflater** (`immortal-inflate.js`) — a fault-tolerant pure-JS DEFLATE decoder, so corrupt/truncated streams yield partial data instead of an error.
 - 📲 **Installs as an app** on Windows, macOS, Linux, ChromeOS, Android, and iOS.
 - 📝 **Two outputs:** a rebuilt `.pptx` plus a plain-text dump of every `<a:t>` slide run.
 
@@ -74,13 +74,11 @@ written natively with the browser's `CompressionStream`.
 
 ## Browser support
 
-Requires `DecompressionStream('deflate-raw')`, available in:
-
-- Chrome / Edge / Opera 95+
-- Safari 16.4+
-- Firefox 113+
-
-If your browser doesn't support it the app surfaces a clear message and stops.
+Runs in any modern browser. Decompression is handled by the bundled **Immortal
+Inflater** (pure JavaScript), so it does **not** require `DecompressionStream`.
+The repaired-file download uses `CompressionStream` when available and silently
+falls back to storing entries uncompressed when it isn't, so the app still works
+on older browsers.
 
 ## Building from source
 
