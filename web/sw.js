@@ -1,10 +1,11 @@
 // PPTX Recovery — minimal cache-first service worker for offline use.
-const CACHE = 'pptxrecovery-v2';
+const CACHE = 'pptxrecovery-v3';
 const ASSETS = [
   './',
   './index.html',
   './immortal-inflate.js',
   './recovery.js',
+  './s2-file-id.js',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',
